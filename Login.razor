@@ -1,0 +1,239 @@
+﻿@page "/"
+@inject BLI.Data.Login.UserArray UserArray;
+@inject NavigationManager NavigationManager;
+@inject BLI.Data.Login.Security security;
+<br>
+<h3 style="        background-color: #448AFF;
+        color: #FFFFFF;
+        border-radius: 20px;
+        width: 20%;
+        margin: auto;
+        box-shadow: 5px 5px 2.5px #888888
+" class="text-center">
+    @temICON
+    @regorlog
+</h3>
+<hr>
+<br>
+<div style="margin:auto;color:red;width:25%;text-align:center">@error</div>
+<br>
+<div style="        background-color: #e9ecef;
+        color: #757575;
+        border-radius: 5px;
+        width: 80%;
+        margin: auto;
+        box-shadow: 10px 10px 5px #888888
+" class="text-center">
+    <br>
+    <form style="margin:auto; width:50%;">
+        <span style="        color: #212121;
+        margin: auto
+"> UserName:</span> <input type="text" name="UserName" style="border: hidden; border-radius:10px" @bind="UserName">
+    </form>
+    <br>
+    <form style="margin:auto; width:50%">
+        <span style="        color: #212121;
+        margin: auto
+"> Password:</span> <input type="password" name="Password" style="border:hidden; border-radius:10px" @bind="Password">
+    </form>
+    <br>
+    @if (regorlog == "Register")
+    {
+        <form style="margin:auto; width:50%">
+            <span style="        color: #212121;
+        margin:auto
+"> Confirm Password:</span> <input type="password" name="CPassword" style="border:hidden; border-radius:10px" @bind="CPassword">
+        </form><br><hr>
+    }
+    else
+    {
+        <hr>
+    }
+<div style="margin:auto">
+    <button style="        border: hidden;
+        border-radius: 5px;
+        background-color: #448AFF;
+        color: #FFFFFF
+" @onclick="ClickLogin">
+        Login
+    </button>
+    <button style="        border: hidden;
+        border-radius: 5px;
+        background-color: #448AFF;
+        color: #FFFFFF
+" @onclick="ClickReg">
+        Register
+    </button>
+    <button style="        border: hidden;
+        border-radius: 5px;
+        background-color: #448AFF;
+        color: #FFFFFF
+" @onclick="read">
+        ReadUser
+    </button>
+    <button style="        border: hidden;
+        border-radius: 5px;
+        background-color: #448AFF;
+        color: #FFFFFF
+" @onclick="store">
+        StoreUser
+    </button>
+</div>
+    <br>
+</div>
+<hr>
+<br>
+@code { 
+    BLI.Data.Login.CJsonReader jsonReader = new BLI.Data.Login.CJsonReader();
+    private String help = "";
+    private String temICON = "Login";
+    private String regorlog { get; set; }
+    private String error { get; set; }
+    private String UserName { get; set; }
+    private String Password { get; set; }
+    private String CPassword { get; set; }
+    private BLI.Data.Login.User User;
+    //private BLI.Data.Login.UserArray UserArray = new BLI.Data.Login.UserArray();
+    private Boolean isreg;
+    /// public void decetion()
+    //  {
+    //      UserArray.addUser(reader.GetUser());
+    //      error = "Load Complete";
+    //  }
+    public void CreatUser(String UserName, String Password)
+    {
+
+        Console.WriteLine("Creation init");
+        this.UserName = UserName;
+        this.Password = Password;
+        User = new Data.Login.User(UserName, Password);
+        Console.WriteLine("Creation" + UserName);
+        Console.WriteLine("Userarray" + UserArray);
+        UserArray.addUser(User);
+        Console.WriteLine("Creation complete");
+    }
+    public void ClickReg()
+    {
+        error = "";
+        /// UserArray.error = "";
+        if (isreg == false)
+        {
+            temICON = null;
+            isreg = true;
+            regorlog = "Register";
+            StateHasChanged();
+            Console.WriteLine("Change");
+        }
+        else
+        {
+            if (UserName == null || Password == null)
+            {
+                error = "You are already in register page";
+            }
+            else
+            {
+                error = "";
+                BLI.Data.Login.User usert = new Data.Login.User(UserName, Password);
+                for (int i = 0; i < UserArray.Count(); i++)
+                {
+                    if (usert.UserName.Equals(UserArray.getUser(i).UserName))
+                    {
+                        error = "This UserName Already Existed";
+                        break;
+                    }
+                }
+                if (Password == CPassword)
+                {
+                    reg();
+                    UserName = null;
+                    Password = null;
+                    CPassword = null;
+                    // writer.WriteUserJson(UserArray.getUserByUser(User).UserName, UserArray.getUserByUser(User).PassWord, UserArray.getUserByUser(User).UserID);
+                }
+                else
+                {
+                    error = "Password does match Please try again";
+                }
+            }
+
+        }
+    }
+    private void reg()
+    {
+        Console.WriteLine("UserName: " + UserName + " password " + Password + "cp]] " + CPassword);
+        Console.WriteLine("reginit");
+        CreatUser(UserName, Password);
+        Console.WriteLine("1234567890" + UserArray.getUserByUser(User));
+        Console.WriteLine("Creat complete." + UserArray.Count() + UserArray.getUserByUser(User).UserName + UserArray.getUserByUser(User).PassWord);
+        error = "Register successfully, please login. Your User ID is: " + UserArray.getUserByUser(User).UserID;
+        string ads = " |||NUM " + UserArray.Count() + "|||UserName " + UserArray.getUserByUser(User).UserName + "|||Password " + UserArray.getUserByUser(User).PassWord + "|||UserID " + UserArray.getUserByUser(User).UserID;
+        Console.WriteLine(ads);
+
+    }
+    public void ClickLogin()
+    {
+        error = "";
+        ///UserArray.error = "";
+        if (isreg == true)
+        {
+            temICON = null;
+            isreg = false;
+            regorlog = "Login";
+            StateHasChanged();
+        }
+        else
+        {
+            if (UserName == null || Password == null)
+            {
+                error = "";
+                error = "You are already in register page";
+            }
+            else
+            {
+                if (LoginVierfy())
+                {
+                    security.changeLogin();
+                    NavigationManager.NavigateTo("Adult");
+                }
+            }
+        }
+    }
+    public Boolean LoginVierfy()
+    {
+        Boolean a = false;
+        error = "";
+        for (int i = 0; i < UserArray.Count(); i++)
+        {
+            if (UserArray.getUser(i).UserName.Equals(UserName) && UserArray.getUser(i).PassWord.Equals(Password))
+            {
+                a = true;
+                Console.WriteLine("Naving");
+                break;
+            }
+            else
+            {
+                a = false;
+                error = "Wrong Password Or Account";
+            }
+        }
+        return a;
+    }
+    public bool SidebarToggle = false;
+    public void Close()
+    {
+        SidebarToggle = false;
+    }
+    public void read()
+    {
+        BLI.Data.Login.User usera;
+        usera = jsonReader.getUserJson();
+        Console.WriteLine(usera.UserName + "/ /" + usera.PassWord);
+        UserArray.addUser(usera);
+        error = "Reading complete";
+    }
+    public void store()
+    {
+        jsonReader.update();
+        error = "saving complete";
+    }
+}

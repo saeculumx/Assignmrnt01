@@ -1,0 +1,135 @@
+﻿@page "/Add"
+@inject BLI.Data.Adult.AdultList AdultList;
+@inject NavigationManager NavigationManager;
+@inject BLI.Data.Login.Security security;
+@if (security.getLoginStatus())
+{
+    <h3 style="        background-color: #448AFF;
+        color: #FFFFFF;
+        border-radius: 20px;
+        width: 20%;
+        margin: auto;
+        box-shadow: 5px 5px 2.5px #888888
+" class="text-center">
+        AddAdult
+    </h3>
+    <br>
+    <br>
+    <div style="        background-color: #e9ecef;
+        border-radius: 10px;
+        box-shadow: 10px 10px 5px #888888;text-align:center">
+        <form>
+            <span style="margin: auto; width: auto">FirstName</span>
+            <br>
+            <input type="text" name="FirstName" style="border:hidden;border-radius:10px" @bind="Firstname">
+        </form>
+        <br>
+        <form>
+            <span style="margin: auto; width: auto">LastName</span>
+            <br>
+            <input type="text" name="LastName" style="border:hidden;border-radius:10px" @bind="LastName">
+        </form>
+        <br>
+        <form>
+            <span style="margin: auto; width: auto">HairColour</span>
+            <br>
+            <input type="text" name="HairColour" style="border:hidden;border-radius:10px" @bind="HairColour">
+        </form>
+        <br>
+        <form>
+            <span style="margin: auto; width: auto">EyeColour</span>
+            <br>
+            <input type="text" name="EyeColour" style="border:hidden;border-radius:10px" @bind="EyeColour">
+        </form>
+        <br>
+        <form>
+            <span style="margin: auto; width: auto">Age</span>
+            <br>
+            <input type="text" name="Age" style="border:hidden;border-radius:10px" @bind="Age">
+        </form>
+        <br>
+        <form>
+            <span style="margin: auto; width: auto">Weight</span>
+            <br>
+            <input type="text" name="Weight" style="border:hidden;border-radius:10px" @bind="Weight">
+        </form>
+        <br>
+        <form>
+            <span style="margin: auto; width: auto">Height</span>
+            <br>
+            <input type="text" name="Height" style="border:hidden;border-radius:10px" @bind="Height">
+        </form>
+        <br>
+        <form>
+            <span style="margin: auto; width: auto">Job</span>
+            <br>
+            <input type="text" name="gender" style="border:hidden;border-radius:10px" @bind="job">
+            <br>
+        </form>
+        <br>
+        <p style="color:red">@hint</p>
+        <button style="border:hidden;border-radius:5px" @onclick="submit">submit</button>
+        <button style="border:hidden;border-radius:5px" @onclick="clear">clear</button>
+        <hr>
+        <br>
+        <button style="border:hidden;border-radius:5px" @onclick="goback">ToList Page</button>
+        <br>
+    </div>
+}
+else
+{
+    <p style="color:red;">You are Not Login yet</p>
+}
+@code {
+    private String hint;
+    private String Firstname;
+    private String LastName;
+    private String HairColour;
+    private String EyeColour;
+    private int Height;
+    private int Age;
+    private int Weight;
+    private String gender;
+    private String job;
+    public void submit()
+    {
+        BLI.Data.Adult.Person person = new Data.Adult.Person();
+        person.FirstName = Firstname;
+        person.LastName = LastName;
+        person.HairColor = HairColour;
+        person.EyeColor = EyeColour;
+        person.Age = Age;
+        person.Height = Height;
+        person.Weight = Weight;
+        person.Sex = gender;
+        BLI.Data.Adult.Adult adult = new Data.Adult.Adult(person, job);
+        AdultList.AddAdult(adult);
+        Firstname = "";
+        EyeColour = "";
+        LastName = "";
+        HairColour = "";
+        Age = 0;
+        Height = 0;
+        Weight = 0;
+        gender = "";
+        job = "";
+        hint = "Successful. please check in list";
+    }
+    public void clear()
+    {
+        Firstname = "";
+        EyeColour = "";
+        LastName = "";
+        HairColour = "";
+        Age = 0;
+        Height = 0;
+        Weight = 0;
+        gender = "";
+        job = "";
+    }
+    public void goback()
+    {
+        NavigationManager.NavigateTo("Adult");
+    }
+
+}

@@ -1,0 +1,172 @@
+﻿@page "/Adult"
+@inject BLI.Data.Adult.AdultList adultList;
+@inject NavigationManager NavigationManager;
+@inject BLI.Data.Login.Security security;
+@if (security.getLoginStatus())
+{
+<br>
+<h3 style="        background-color: #448AFF;
+        color: white;
+        border-radius: 20px;
+        width: 20%;
+        margin: auto;
+        box-shadow: 5px 5px 2.5px #888888
+" class="text-center">
+    Audlt
+</h3>
+<hr>
+<br>
+<br>
+<div style="        background-color: #e9ecef;
+        border-radius: 10px;
+        box-shadow: 10px 10px 5px #888888;text-align:center">
+    <br>
+    <form>
+        <span style="        margin: auto;
+        width: auto
+">Search</span> <br> <input type="text" name="Searching Area" style="border:hidden;border-radius:10px" @bind="AdultName">
+
+    </form>
+    <br>
+    <button style="border:hidden;border-radius:5px" @onclick="search">Search</button>
+    <button style="border:hidden;border-radius:5px" @onclick="restore">Restore</button>
+    <br>
+    <br>
+</div>
+<br>
+<div style="        background-color: #e9ecef;
+        border-radius: 10px;
+        box-shadow: 10px 10px 5px #888888">
+    <br>
+    <hr>
+
+    <table style="    margin: auto;
+        background-color: #e9ecef;
+        color: #212121;
+        width: 90%;
+        border-radius: 5px;
+        font-weight: 100;
+    " class="text-center">
+        <thead>
+            <tr>
+                <th style="        font-weight: 100;
+        background-color: #f4f1de
+">FirstName</th>
+                <th style="        font-weight: 100;
+        background-color: #f4f1de
+">LastName</th>
+                <th style="        font-weight: 100;
+        background-color: #f4f1de
+">ID</th>
+                <th style="        font-weight: 100;
+        background-color: #f4f1de
+">HairColour</th>
+                <th style="        font-weight: 100;
+        background-color: #f4f1de
+">EyeColour</th>
+                <th style="        font-weight: 100;
+        background-color: #f4f1de
+">Height</th>
+                <th style="        font-weight: 100;
+        background-color: #f4f1de
+">Weight</th>
+                <th style="        font-weight: 100;
+        background-color: #f4f1de
+">Job</th>
+                <th style="        font-weight: 100;
+        background-color: #f4f1de
+">Gender</th>
+                <th style="        font-weight: 100;
+        background-color: #f4f1de
+">Age</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var adult in TList)
+            {
+                <tr>
+                    <td>@adult.FirstName</td>
+                    <td>@adult.LastName</td>
+                    <td>@adult.Id</td>
+                    <td>@adult.HairColor</td>
+                    <td>@adult.EyeColor</td>
+                    <td>@adult.Height</td>
+                    <td>@adult.Weight</td>
+                    <td>@adult.Job</td>
+                    <td>@adult.Sex</td>
+                    <td>@adult.Age</td>
+                </tr>
+            }
+        </tbody>
+    </table><hr>
+    <br>
+    <div style="margin:auto">
+        <br>
+        <button style="margin: auto;border:hidden; border-radius: 5px" @onclick="goback">Add Adult</button>
+        <button style="margin: auto;border:hidden; border-radius: 5px" @onclick="Exit">Exit</button>
+        <br>
+    </div>
+</div>
+}
+else
+{ 
+    <p  style="color:red;">You are Not Login yet</p>
+}
+@code {
+    private String AdultName;
+    private List<BLI.Data.Adult.Adult> TList = new List<Data.Adult.Adult>();
+    private BLI.Data.Adult.Job job = new Data.Adult.Job();
+    private BLI.Data.Adult.Names names = new Data.Adult.Names();
+    public void restore()
+    {
+        AdultName = "";
+        TList = adultList.getList();
+    }
+    public void search()
+    {
+        TList = adultList.getAdultListByName(AdultName);
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        TList = adultList.getList();
+
+        for (int i = 0; i < 20; i++)
+        {
+            Random rnd = new Random();
+            int a = rnd.Next(0, 6);
+            int b = rnd.Next(0, 8);
+            int c = rnd.Next(1, 160);
+            int d = rnd.Next(1, 300);
+            int e = rnd.Next(1, 250);
+            int f = rnd.Next(0, 2);
+            int j = rnd.Next(0, 25);
+            Console.WriteLine(a + "," + b + "," + c + "," + d + "," + e + "," + f + "," + j);
+            BLI.Data.Adult.Person person = new Data.Adult.Person();
+            person.FirstName = names.ramdonFNames();
+            person.LastName = names.ramdonLNames();
+            person.SetEyeColour(a);
+            person.SetHairColour(b);
+            person.Id = i;
+            person.SetAge(c);
+            person.setHeight(e);
+            person.setWeight(d);
+            if (f == 0)
+            {
+                person.setSex(false);
+            }
+            else { person.setSex(true); }
+            BLI.Data.Adult.Adult adultL = new Data.Adult.Adult(person, job.selectJob(j));
+            Console.WriteLine(adultL.FirstName + adultL.LastName + adultL.Id + adultL.HairColor + adultL.EyeColor + adultL.Height + adultL.Weight + adultL.Job);
+            adultList.AddAdult(adultL);
+        }
+    }
+    public void goback()
+    {
+        NavigationManager.NavigateTo("Add");
+    }
+    public void Exit()
+    {
+        security.changeLogin();
+        NavigationManager.NavigateTo("");
+    }
+}
